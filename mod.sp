@@ -117,3 +117,42 @@ WHERE
   tags -> 'cc_action' is null;
 EOQ
 }
+
+##########################
+### Application Load Balancer
+query "alb" {
+  sql = <<-EOQ
+SELECT
+  arn AS "ALB ARN",
+  region as "Region",
+  split_part(  split_part(tags ->> 'cc_action', ':', 2)  , '@', 1) AS "Action",
+  split_part(  split_part(tags ->> 'cc_action', ':', 2)  , '@', 2) AS "Date",
+  split_part(             tags ->> 'cc_action', ':', 1)            AS "Reason"
+FROM
+  aws_ec2_application_load_balancer
+WHERE
+  tags ? 'cc_action';
+EOQ
+}g
+
+query "alb_count" {
+  sql = <<-EOQ
+SELECT
+  count(*) AS "ALB's with Action"
+FROM
+  aws_ec2_application_load_balancer
+WHERE
+  tags ? 'cc_action';
+EOQ
+}
+
+query "alb_count_nocc" {
+  sql = <<-EOQ
+SELECT
+  count(*) AS "ALB's NO Action"
+FROM
+  aws_ec2_application_load_balancer
+WHERE
+  tags -> 'cc_action' is null;
+EOQ
+}

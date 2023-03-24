@@ -65,6 +65,25 @@ container {
     }
 }
 
+container {
+    width = 6
+    text {
+        value = "## ALBs"
+    }
+
+    card {
+        sql = query.alb_count.sql
+        width = 4
+    }
+    card {
+        sql = query.alb_count_nocc.sql
+        width = 4
+    }
+
+    table {
+        sql = query.alb.sql
+    }
+}
 
 
 

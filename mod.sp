@@ -133,7 +133,7 @@ FROM
 WHERE
   tags ? 'cc_action';
 EOQ
-}g
+}
 
 query "alb_count" {
   sql = <<-EOQ

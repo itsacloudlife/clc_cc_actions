@@ -131,7 +131,7 @@ SELECT
 FROM
   aws_ec2_application_load_balancer
 WHERE
-  tags ? 'cc_action';
+  tags ? 'cc_action'
 EOQ
 }
 
@@ -154,5 +154,46 @@ FROM
   aws_ec2_application_load_balancer
 WHERE
   tags -> 'cc_action' is null;
+EOQ
+}
+
+
+##########################
+### Elastic IP Queries
+query "eip" {
+  sql = <<-EOQ
+SELECT
+  public_ip AS "IP",
+  region as "Region",
+  split_part(  split_part(tags ->> 'cc_action', ':', 2)  , '@', 1) AS "Action",
+  split_part(  split_part(tags ->> 'cc_action', ':', 2)  , '@', 2) AS "Date",
+  split_part(             tags ->> 'cc_action', ':', 1)            AS "Reason"
+FROM
+  aws_vpc_eip
+WHERE
+  tags ? 'cc_action'
+EOQ
+}
+
+query "eip_count" {
+  sql = <<-EOQ
+SELECT
+  count(*) AS "EIP's with Action"
+FROM
+  aws_vpc_eip
+WHERE
+  tags ? 'cc_action'
+  and tags ->> 'cc_ignore' is null
+EOQ
+}
+
+query "eip_count_nocc" {
+  sql = <<-EOQ
+SELECT
+  count(*) AS "EIP's with NO Action"
+FROM
+  aws_vpc_eip
+WHERE
+  tags ->> 'cc_action' is null
 EOQ
 }

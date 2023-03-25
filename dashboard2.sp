@@ -122,6 +122,31 @@ container {
 }
 
 
+container {
+    width = 12
+    text {
+        value = "## EIP"
+    }
+  image {
+      src = "https://static.wixstatic.com/media/a5e8fd_f41f85fbcbf8490db53862c1e7cb4eac~mv2.png"
+      width = 1
+    }
+
+    card {
+        sql = query.eip_count.sql
+        width = 2
+    }
+    card {
+        sql = query.eip_count_nocc.sql
+        width = 2
+    }
+
+    table {
+        width = 6
+        sql = query.eip.sql
+    }
+}
+
 
 }
 

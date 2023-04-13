@@ -774,3 +774,91 @@ query "eip_actions_bar" {
 EOQ
 }
 
+#################################
+### CloudWatch Log Groups
+#################################
+
+query "log_group" {
+  sql = <<-EOQ
+SELECT
+  arn AS "Log Group ARN",
+  region as "Region",
+  split_part(  split_part(tags ->> 'cc_action', ':', 2)  , '@', 1) AS "Action",
+  split_part(  split_part(tags ->> 'cc_action', ':', 2)  , '@', 2) AS "Date",
+  split_part(             tags ->> 'cc_action', ':', 1)            AS "Reason"
+FROM
+  aws_cloudwatch_log_group
+WHERE
+  tags ? 'cc_action'
+EOQ
+}
+
+query "log_group_count" {
+  sql = <<-EOQ
+SELECT
+  'Log Group w/ Action' as label,
+  count(*) as value,
+  case
+    when count(*) > 0 then 'alert'
+    else 'ok'
+  end as type
+FROM
+  aws_cloudwatch_log_group
+WHERE
+  tags ? 'cc_action';
+EOQ
+}
+
+query "log_group_count_nocc" {
+  sql = <<-EOQ
+SELECT
+  count(*) as value,
+  case
+    when count(*) > 0 then 'alert'
+    else 'ok'
+  end as type
+FROM
+  aws_cloudwatch_log_group
+WHERE
+  tags -> 'cc_action' is null;
+EOQ
+}
+
+### CloudWatch Log Group Bar Graph ###
+
+query "log_group_actions_bar" {
+  sql = <<-EOQ
+    with log_group_action as (
+      select
+        region,
+        count(*) as action
+      from
+        aws_cloudwatch_log_group
+      where
+        tags ? 'cc_action'
+        AND NOT tags ? 'cc_ignore'
+      group by
+        region
+    ),
+    log_group_noaction as (
+      select
+        region,
+        count(*) as no_action
+      from
+        aws_cloudwatch_log_group
+      where
+        tags -> 'cc_action' is null
+      group by
+        region
+    )
+    select
+      coalesce(v.region, n.region) as region,
+      v.no_action,
+      n.action
+    from
+      log_group_noaction as v
+      full join log_group_action n on v.region = n.region
+    order by
+      coalesce(v.region, n.region);
+EOQ
+}

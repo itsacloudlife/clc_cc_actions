@@ -699,6 +699,78 @@ container {
 }
 
 
+container {
+    width = 12
+    text {
+        value = "# CloudWatch Log Groups"
+    }
+
+    image {
+      src = "https://static.wixstatic.com/media/a5e8fd_f41f85fbcbf8490db53862c1e7cb4eac~mv2.png"
+      width = 2
+    }
+
+    card {
+        sql = query.log_group_count.sql
+        width = 2
+    }
+
+    table {
+        width = 6
+        sql = query.log_group.sql
+    }
+
+    image {
+      src = "https://static.wixstatic.com/media/a5e8fd_f41f85fbcbf8490db53862c1e7cb4eac~mv2.png"
+      width = 2
+    }
+
+    image {
+      src = "https://static.wixstatic.com/media/a5e8fd_f41f85fbcbf8490db53862c1e7cb4eac~mv2.png"
+      width = 2
+    }
+
+    chart {
+        width = 8
+        type = "bar"
+        title = "CloudWatch Log Group Actions per Region"
+
+        legend {
+            display = "auto"
+            position = "top"
+        }
+
+        series action {
+            title = "Log Groups with actions"
+            color = "red"
+        }
+
+        series no_action {
+            title = "Log Groups w/o actions"
+            color = "green"
+        }
+
+        axes { 
+            x {
+                title {
+                    value = "Totals"
+                }
+                labels {
+                    display = "show"
+                }
+            }
+            y {
+                title {
+
+                }
+                labels {
+                    display = "show"
+                }
+            }
+        }
+        sql = query.log_group_actions_bar.sql
+    }
+}
 
 
 }

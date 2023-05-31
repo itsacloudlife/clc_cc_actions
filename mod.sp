@@ -193,7 +193,8 @@ SELECT
 FROM
   aws_ebs_volume
 WHERE
-  tags ? 'cc_action'
+  volume_type = 'gp2'
+  AND tags ? 'cc_action'
   AND NOT tags ? 'cc_ignore';
 EOQ
 }
